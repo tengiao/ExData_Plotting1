@@ -1,0 +1,21 @@
+file <- read.csv("household_power_consumption.txt", sep = ";", colClasses = "character")
+Date <- as.Date(file[, "Date"], format = "%d/%m/%Y") #Format to %Y-%m-%d
+Time <- file[, "Time"]
+DateTime <- paste(Date, Time)
+TimeStamp <- strptime(DateTime, format = "%Y-%m-%d %H:%M:%S")
+SubMetering1 <- as.numeric(file[, "Sub_metering_1"])
+SubMetering2 <- as.numeric(file[, "Sub_metering_2"])
+SubMetering3 <- as.numeric(file[, "Sub_metering_3"])
+newtable <- data.frame(Date, TimeStamp, SubMetering1, SubMetering2, SubMetering3)
+newtable.sub <- subset(newtable, Date >= "2007-02-01" & Date <= "2007-02-02", select = c(TimeStamp, SubMetering1, SubMetering2, SubMetering3))
+yrange <- range(c(na.omit(newtable.sub[, "SubMetering1"]), na.omit(newtable.sub[, "SubMetering2"]), na.omit(newtable.sub[, "SubMetering1"])))
+png(file = "plot3.png", width = 480, height = 480)
+with(newtable.sub, plot(TimeStamp, SubMetering1, main = "", pch = ".", type = "o", xlab = "", ylab = "Energy sub metering", ylim = yrange))
+par(new = T)
+with(newtable.sub, plot(TimeStamp, SubMetering2, axes = F, col = "red", main = "", pch = ".", type = "o", xlab = "", ylab = "", ylim = yrange))
+par(new = T)
+with(newtable.sub, plot(TimeStamp, SubMetering3, axes = F, col = "blue", main = "", pch = ".", type = "o", xlab = "", ylab = "", ylim = yrange))
+par(new = F)
+legend("topright", col = c("black", "red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), lty = c(1, 1, 1), xjust = 1)
+dev.off()
+
